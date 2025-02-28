@@ -7,7 +7,8 @@ import { readFileSync } from "fs";
 const doc = `get-arc56-error
 
 Usage:
-  get-arc56-error parse [options] <arc56-path> <error> 
+  get-arc56-error parse [options] <arc56-path> <error>
+  get-arc56-error find [options] <arc56-path> --pc=pc --app=app
 
 Options:
   --network=<testnet|mainnet|localnet> The network the deployed app is on
@@ -15,11 +16,23 @@ Options:
 
 const parsedArgs = docopt(doc);
 
-const arc56 = JSON.parse(readFileSync(parsedArgs["<arc56-path>"], "utf-8"));
-const errorMessage = parsedArgs["<error>"];
-const network = parsedArgs["--network"];
+let errorMessage: string;
+let app: bigint;
 
-const app = BigInt(errorMessage.match(/app=(\d+)/)![1]);
+if (parsedArgs.parse) {
+  errorMessage = parsedArgs["<error>"];
+  app = BigInt(errorMessage.match(/app=(\d+)/)![1]);
+} else {
+  const pc = parsedArgs["--pc"];
+  app = BigInt(parsedArgs["--app"]);
+
+  // The mechanism for shifting PC is only within parseLogicError, so we need to make a fake error message that this function can parse
+  // In the future, the PC mechanism should be publicly exposed for easier use
+  errorMessage = `TransactionPool.Remember: transaction I52GYOJNDEQEZVE3W66YHPBAWTRXEYVKEJOTMYREHBJX5QKYSTEA: logic eval error: assert failed pc=${pc}. Details: app=${app}, pc=${pc}`;
+}
+
+const arc56 = JSON.parse(readFileSync(parsedArgs["<arc56-path>"], "utf-8"));
+const network = parsedArgs["--network"];
 
 let algorand: AlgorandClient;
 
@@ -40,7 +53,6 @@ const program = (await algorand.client.algod.getApplicationByID(app).do())
   .params.approvalProgram;
 
 const error = new Error(errorMessage);
-console.log(`Parsing error: ${error.message}...`);
 const logicError = AppClient.exposeLogicError(
   error,
   // @ts-ignore
