@@ -47,4 +47,9 @@ const logicError = AppClient.exposeLogicError(
   arc56,
   { program, approvalSourceInfo: arc56.sourceInfo.approval },
 ) as LogicError;
-console.debug({ teal: logicError.teal_line, details: logicError.led });
+
+const sourceInfo = arc56.sourceInfo.approval.sourceInfo.find(
+  (s) => s.teal == logicError.teal_line,
+);
+
+console.log("Source Info:", sourceInfo);
