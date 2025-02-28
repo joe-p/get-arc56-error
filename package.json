@@ -1,0 +1,19 @@
+{
+  "name": "get-arc56-error",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.5.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@algorandfoundation/algokit-utils": "^8.2.2",
+    "@types/docopt": "^0.6.37",
+    "argparse": "^2.0.1",
+    "docopt": "^0.6.2"
+  }
+}
