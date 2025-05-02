@@ -64,4 +64,5 @@ const sourceInfo = arc56.sourceInfo.approval.sourceInfo.find(
   (s) => s.teal == logicError.teal_line,
 );
 
+console.log(`Error message: ${logicError.message}`);
 console.log("Source Info:", sourceInfo);
